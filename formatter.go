@@ -2,7 +2,7 @@ package logs
 
 // Default key names for the default fields
 const (
-	defaultTimestampFormat = "2006-01-02 15:04:05.000"
+	defaultTimestampFormat = "2006/01/02 15:04:05.000"
 	FieldKeyMsg            = "msg"
 	FieldKeyLevel          = "level"
 	FieldKeyTime           = "time"
@@ -10,6 +10,7 @@ const (
 	FieldKeyFunc           = "func"
 	FieldKeyFile           = "file"
 )
+
 type fieldKey string
 
 type FieldMap map[fieldKey]string
@@ -21,8 +22,6 @@ func (f FieldMap) resolve(key fieldKey) string {
 
 	return string(key)
 }
-
-
 
 // The Formatter interface is used to implement a custom Formatter. It takes an
 // `Entry`. It exposes all the fields, including the default ones:

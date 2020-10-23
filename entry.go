@@ -27,7 +27,7 @@ var (
 
 const (
 	maximumCallerDepth int = 25
-	knownLogFrames     int = 4
+	knownLogFrames     int = 7
 )
 
 func init() {
@@ -198,6 +198,12 @@ func getCaller() *runtime.Frame {
 func (entry Entry) HasCaller() (has bool) {
 	return entry.Logger != nil &&
 		entry.Logger.ReportCaller &&
+		entry.Caller != nil
+}
+
+func (entry Entry) HasFunc() (has bool) {
+	return entry.Logger != nil &&
+		entry.Logger.ReportFunc &&
 		entry.Caller != nil
 }
 

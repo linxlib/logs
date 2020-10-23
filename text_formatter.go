@@ -209,6 +209,7 @@ func (f *TextFormatter) printNotColored(b *bytes.Buffer, entry *Entry, keys []st
 	caller := ""
 	if entry.HasCaller() {
 		funcVal := fmt.Sprintf("%s()", entry.Caller.Function)
+
 		fileVal := fmt.Sprintf("%s:%d", entry.Caller.File, entry.Caller.Line)
 
 		if f.CallerPrettyfier != nil {

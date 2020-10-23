@@ -2,8 +2,10 @@ package logs
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"os"
+	"runtime"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -28,6 +30,8 @@ type Logger struct {
 
 	// Flag for whether to log caller info (off by default)
 	ReportCaller bool
+
+	ReportFunc bool
 
 	// The logging level the logger should log at. This is typically (and defaults
 	// to) `logs.Info`, which allows Info(), Warn(), Error() and Fatal() to be
@@ -77,6 +81,19 @@ func (mw *MutexWrap) Disable() {
 //
 // It's recommended to make this a global instance called `log`.
 func New() *Logger {
+	callerPrettyfier = func(frame *runtime.Frame) (function string, file string) {
+		function = ""
+		file = frame.File
+		short := file
+		for i := len(file) - 1; i > 0; i-- {
+			if file[i] == '/' || file[i] == '\\' {
+				short = file[i+1:]
+				break
+			}
+		}
+		file = fmt.Sprintf("%s:%d", short, frame.Line)
+		return
+	}
 	return &Logger{
 		Out: stderr(),
 		Formatter: &TextFormatter{
@@ -86,9 +103,10 @@ func New() *Logger {
 			CallerPrettyfier: callerPrettyfier,
 		},
 		Hooks:        make(LevelHooks),
-		Level:        InfoLevel,
+		Level:        DebugLevel,
 		ExitFunc:     os.Exit,
 		ReportCaller: true,
+		ReportFunc:   false,
 	}
 }
 
