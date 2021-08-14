@@ -13,10 +13,13 @@ import (
 )
 
 const (
-	red    = 31
-	yellow = 33
-	blue   = 36
-	gray   = 37
+	red     = 91
+	green   = 92
+	yellow  = 93
+	blue    = 94
+	magenta = 95
+	cyan    = 96
+	white   = 97
 )
 
 var baseTimestamp time.Time
@@ -249,13 +252,13 @@ func (f *TextFormatter) printColored(b *bytes.Buffer, entry *Entry, keys []strin
 	var levelColor int
 	switch entry.Level {
 	case DebugLevel, TraceLevel:
-		levelColor = gray
+		levelColor = green
 	case WarnLevel:
 		levelColor = yellow
 	case ErrorLevel, FatalLevel, PanicLevel:
 		levelColor = red
 	default:
-		levelColor = blue
+		levelColor = white
 	}
 
 	levelText := strings.ToUpper(entry.Level.String())
