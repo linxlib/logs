@@ -13,13 +13,13 @@ import (
 )
 
 const (
-	red     = 91
-	green   = 92
-	yellow  = 93
-	blue    = 94
-	magenta = 95
-	cyan    = 96
-	white   = 97
+	red     = "31"
+	green   = "32"
+	yellow  = "33"
+	blue    = "34"
+	magenta = "35"
+	cyan    = "36"
+	white   = "37"
 )
 
 var baseTimestamp time.Time
@@ -249,16 +249,16 @@ func (f *TextFormatter) printNotColored(b *bytes.Buffer, entry *Entry, keys []st
 }
 
 func (f *TextFormatter) printColored(b *bytes.Buffer, entry *Entry, keys []string, data Fields, timestampFormat string) {
-	var levelColor int
+	var levelColor string
 	switch entry.Level {
 	case DebugLevel, TraceLevel:
-		levelColor = green
+		levelColor = blue
 	case WarnLevel:
 		levelColor = yellow
 	case ErrorLevel, FatalLevel, PanicLevel:
 		levelColor = red
 	default:
-		levelColor = white
+		levelColor = green
 	}
 
 	levelText := strings.ToUpper(entry.Level.String())
@@ -302,15 +302,15 @@ func (f *TextFormatter) printColored(b *bytes.Buffer, entry *Entry, keys []strin
 	}
 
 	if f.DisableTimestamp {
-		fmt.Fprintf(b, "\x1b[%dm%s\x1b[0m %s \x1b[%dm%-44s\x1b[0m ", levelColor, levelText, caller, levelColor, entry.Message)
+		fmt.Fprintf(b, "\x1b[%sm%s\x1b[0m %s \x1b[%dm%-44s\x1b[0m ", levelColor, levelText, caller, levelColor, entry.Message)
 	} else if !f.FullTimestamp {
-		fmt.Fprintf(b, "[%04d] \x1b[%dm%s\x1b[0m %s \x1b[%dm%-44s\x1b[0m ", int(entry.Time.Sub(baseTimestamp)/time.Second), levelColor, levelText, caller, levelColor, entry.Message)
+		fmt.Fprintf(b, "[%04d] \x1b[%sm%s\x1b[0m %s \x1b[%dm%-44s\x1b[0m ", int(entry.Time.Sub(baseTimestamp)/time.Second), levelColor, levelText, caller, levelColor, entry.Message)
 	} else {
-		fmt.Fprintf(b, "%s \x1b[%dm%s\x1b[0m %s \x1b[%dm%-44s\x1b[0m ", entry.Time.Format(timestampFormat), levelColor, levelText, caller, levelColor, entry.Message)
+		fmt.Fprintf(b, "%s \x1b[%sm%s\x1b[0m %s \x1b[%sm%-44s\x1b[0m ", entry.Time.Format(timestampFormat), levelColor, levelText, caller, levelColor, entry.Message)
 	}
 	for _, k := range keys {
 		v := data[k]
-		fmt.Fprintf(b, " \x1b[%dm%s\x1b[0m=", levelColor, k)
+		fmt.Fprintf(b, " \x1b[%sm%s\x1b[0m=", levelColor, k)
 		f.appendValue(b, v)
 	}
 }
