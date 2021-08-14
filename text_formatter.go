@@ -65,6 +65,8 @@ type TextFormatter struct {
 	// QuoteEmptyFields will wrap empty fields in quotes if true
 	QuoteEmptyFields bool
 
+	HideLevelText bool
+
 	// Whether the logger's out is to a terminal
 	isTerminal bool
 
@@ -201,6 +203,9 @@ func (f *TextFormatter) printNotColored(b *bytes.Buffer, entry *Entry, keys []st
 		//	- "WARNING"
 		levelText = fmt.Sprintf(formatString, levelText)
 	}
+	if f.HideLevelText {
+		levelText = ""
+	}
 
 	// Remove a single newline if it already exists in the message to keep
 	// the behavior of logs text_formatter the same as the stdlib log package
@@ -257,6 +262,7 @@ func (f *TextFormatter) printColored(b *bytes.Buffer, entry *Entry, keys []strin
 	if !f.DisableLevelTruncation && !f.PadLevelText {
 		levelText = levelText[0:4]
 	}
+
 	if f.PadLevelText {
 		// Generates the format string used in the next line, for example "%-6s" or "%-7s".
 		// Based on the max level text length.
@@ -265,6 +271,9 @@ func (f *TextFormatter) printColored(b *bytes.Buffer, entry *Entry, keys []strin
 		// 	- "INFO   "
 		//	- "WARNING"
 		levelText = fmt.Sprintf(formatString, levelText)
+	}
+	if f.HideLevelText {
+		levelText = ""
 	}
 
 	// Remove a single newline if it already exists in the message to keep
