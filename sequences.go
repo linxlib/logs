@@ -4,7 +4,6 @@ package logs
 
 import (
 	"syscall"
-	"unsafe"
 )
 
 var (
