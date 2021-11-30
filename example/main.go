@@ -15,7 +15,7 @@ func main() {
 	service.Init()
 
 	c := cron.New(cron.WithSeconds())
-	c.AddJob("0/5 * * * * ? ", new(service.WeatherJob))
+	c.AddJob("0 0 6/2 * * ? ", new(service.WeatherJob))
 
 	c.Start()
 	select {
