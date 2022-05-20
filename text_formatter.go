@@ -276,7 +276,7 @@ func (f *TextFormatter) printColored(b *bytes.Buffer, entry *Entry, keys []strin
 		levelText = fmt.Sprintf(formatString, levelText)
 	}
 	if f.HideLevelText {
-		levelText = ""
+		levelText = " "
 	}
 
 	// Remove a single newline if it already exists in the message to keep
