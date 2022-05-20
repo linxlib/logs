@@ -5,20 +5,23 @@ package logs
 
 import (
 	"io"
+	"strings"
 )
 
 type RotateFileConfig struct {
-	Filename   string
-	MaxSize    int
-	MaxBackups int
-	MaxAge     int
-	Level      Level
-	Formatter  Formatter
+	Filename          string
+	MaxSize           int
+	MaxBackups        int
+	MaxAge            int
+	SeparateLevelFile bool
+	Level             Level
+	Formatter         Formatter
 }
 
 type RotateFileHook struct {
-	Config    RotateFileConfig
-	logWriter io.Writer
+	Config     RotateFileConfig
+	logWriter  io.Writer
+	logWriters map[Level]io.Writer
 }
 
 func NewRotateFileHook(config RotateFileConfig) (Hook, error) {
@@ -26,12 +29,28 @@ func NewRotateFileHook(config RotateFileConfig) (Hook, error) {
 	hook := RotateFileHook{
 		Config: config,
 	}
-	hook.logWriter = &RotateFileLogger{
-		Filename:   config.Filename,
-		MaxSize:    config.MaxSize,
-		MaxBackups: config.MaxBackups,
-		MaxAge:     config.MaxAge,
-		LocalTime:  true,
+	if config.SeparateLevelFile {
+		levels := hook.Levels()
+		hook.logWriters = make(map[Level]io.Writer)
+		for _, level := range levels {
+
+			hook.logWriters[level] = &RotateFileLogger{
+				Filename:   strings.ReplaceAll(config.Filename, "<level>", level.String()),
+				MaxSize:    config.MaxSize,
+				MaxBackups: config.MaxBackups,
+				MaxAge:     config.MaxAge,
+				LocalTime:  true,
+			}
+		}
+
+	} else {
+		hook.logWriter = &RotateFileLogger{
+			Filename:   config.Filename,
+			MaxSize:    config.MaxSize,
+			MaxBackups: config.MaxBackups,
+			MaxAge:     config.MaxAge,
+			LocalTime:  true,
+		}
 	}
 
 	return &hook, nil
@@ -46,6 +65,12 @@ func (hook *RotateFileHook) Fire(entry *Entry) (err error) {
 	if err != nil {
 		return err
 	}
-	hook.logWriter.Write(b)
+	if hook.logWriter != nil {
+		hook.logWriter.Write(b)
+	} else {
+		if w, ok := hook.logWriters[entry.Level]; ok {
+			w.Write(b)
+		}
+	}
 	return nil
 }

@@ -28,11 +28,12 @@ var (
 
 func AddFileHook(appName string) {
 	rotateFileHook, _ := NewRotateFileHook(RotateFileConfig{
-		Filename:   "./output/log/" + appName + ".log",
-		MaxSize:    5, //MB
-		MaxBackups: 7,
-		MaxAge:     7,
-		Level:      DebugLevel,
+		Filename:          "./log/<level>_" + appName + ".log",
+		MaxSize:           5, //MB
+		MaxBackups:        7,
+		SeparateLevelFile: true,
+		MaxAge:            7,
+		Level:             DebugLevel,
 		Formatter: &TextFormatter{
 			ForceColors:      false,
 			DisableColors:    true,

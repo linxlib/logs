@@ -7,4 +7,4 @@ require (
 	github.com/robfig/cron/v3 v3.0.1
 )
 
-replace github.com/linxlib/logs v0.0.7 => ../
+replace github.com/linxlib/logs => ../
