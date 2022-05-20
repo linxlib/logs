@@ -276,7 +276,7 @@ func (f *TextFormatter) printColored(b *bytes.Buffer, entry *Entry, keys []strin
 		levelText = fmt.Sprintf(formatString, levelText)
 	}
 	if f.HideLevelText {
-		levelText = " "
+		levelText = ""
 	}
 
 	// Remove a single newline if it already exists in the message to keep
@@ -302,9 +302,9 @@ func (f *TextFormatter) printColored(b *bytes.Buffer, entry *Entry, keys []strin
 	}
 
 	if f.DisableTimestamp {
-		fmt.Fprintf(b, "\x1b[%sm%s\x1b[0m %s \x1b[%dm%-44s\x1b[0m ", levelColor, levelText, caller, levelColor, entry.Message)
+		fmt.Fprintf(b, "\x1b[%sm%s\x1b[0m %s \x1b[%sm%-44s\x1b[0m ", levelColor, levelText, caller, levelColor, entry.Message)
 	} else if !f.FullTimestamp {
-		fmt.Fprintf(b, "[%04d] \x1b[%sm%s\x1b[0m %s \x1b[%dm%-44s\x1b[0m ", int(entry.Time.Sub(baseTimestamp)/time.Second), levelColor, levelText, caller, levelColor, entry.Message)
+		fmt.Fprintf(b, "[%04d] \x1b[%sm%s\x1b[0m %s \x1b[%sm%-44s\x1b[0m ", int(entry.Time.Sub(baseTimestamp)/time.Second), levelColor, levelText, caller, levelColor, entry.Message)
 	} else {
 		fmt.Fprintf(b, "%s \x1b[%sm%s\x1b[0m %s \x1b[%sm%-44s\x1b[0m ", entry.Time.Format(timestampFormat), levelColor, levelText, caller, levelColor, entry.Message)
 	}
