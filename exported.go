@@ -40,7 +40,7 @@ func AddFileHook(appName string) {
 			FullTimestamp:    true,
 			TimestampFormat:  defaultTimestampFormat,
 			QuoteEmptyFields: true,
-			CallerPrettyfier: callerPrettyfier,
+			CallerPrettifier: callerPrettyfier,
 		},
 	})
 	std.AddHook(rotateFileHook)

@@ -82,11 +82,11 @@ type TextFormatter struct {
 	//         FieldKeyMsg:   "@message"}}
 	FieldMap FieldMap
 
-	// CallerPrettyfier can be set by the user to modify the content
+	// CallerPrettifier can be set by the user to modify the content
 	// of the function and file keys in the data when ReportCaller is
 	// activated. If any of the returned value is the empty string the
 	// corresponding key will be removed from fields.
-	CallerPrettyfier func(*runtime.Frame) (function string, file string)
+	CallerPrettifier func(*runtime.Frame) (function string, file string)
 
 	terminalInitOnce sync.Once
 
@@ -138,8 +138,8 @@ func (f *TextFormatter) Format(entry *Entry) ([]byte, error) {
 		fixedKeys = append(fixedKeys, f.FieldMap.resolve(FieldKeylogsError))
 	}
 	if entry.HasCaller() {
-		if f.CallerPrettyfier != nil {
-			funcVal, fileVal = f.CallerPrettyfier(entry.Caller)
+		if f.CallerPrettifier != nil {
+			funcVal, fileVal = f.CallerPrettifier(entry.Caller)
 		} else {
 			funcVal = entry.Caller.Function
 			fileVal = fmt.Sprintf("%s:%d", entry.Caller.File, entry.Caller.Line)
@@ -220,8 +220,8 @@ func (f *TextFormatter) printNotColored(b *bytes.Buffer, entry *Entry, keys []st
 
 		fileVal := fmt.Sprintf("%s:%d", entry.Caller.File, entry.Caller.Line)
 
-		if f.CallerPrettyfier != nil {
-			funcVal, fileVal = f.CallerPrettyfier(entry.Caller)
+		if f.CallerPrettifier != nil {
+			funcVal, fileVal = f.CallerPrettifier(entry.Caller)
 		}
 
 		if fileVal == "" {
@@ -290,8 +290,8 @@ func (f *TextFormatter) printColored(b *bytes.Buffer, entry *Entry, keys []strin
 		funcVal := fmt.Sprintf("%s()", entry.Caller.Function)
 		fileVal := fmt.Sprintf("%s:%d", entry.Caller.File, entry.Caller.Line)
 
-		if f.CallerPrettyfier != nil {
-			funcVal, fileVal = f.CallerPrettyfier(entry.Caller)
+		if f.CallerPrettifier != nil {
+			funcVal, fileVal = f.CallerPrettifier(entry.Caller)
 		}
 
 		if fileVal == "" {
@@ -304,15 +304,15 @@ func (f *TextFormatter) printColored(b *bytes.Buffer, entry *Entry, keys []strin
 	}
 
 	if f.DisableTimestamp {
-		fmt.Fprintf(b, "\x1b[%sm%s\x1b[0m %s \x1b[%sm%-44s\x1b[0m ", levelColor, levelText, caller, levelColor, entry.Message)
+		_, _ = fmt.Fprintf(b, "\x1b[%sm%s\x1b[0m %s \x1b[%sm%-44s\x1b[0m ", levelColor, levelText, caller, levelColor, entry.Message)
 	} else if !f.FullTimestamp {
-		fmt.Fprintf(b, "[%04d] \x1b[%sm%s\x1b[0m %s \x1b[%sm%-44s\x1b[0m ", int(entry.Time.Sub(baseTimestamp)/time.Second), levelColor, levelText, caller, levelColor, entry.Message)
+		_, _ = fmt.Fprintf(b, "[%04d] \x1b[%sm%s\x1b[0m %s \x1b[%sm%-44s\x1b[0m ", int(entry.Time.Sub(baseTimestamp)/time.Second), levelColor, levelText, caller, levelColor, entry.Message)
 	} else {
-		fmt.Fprintf(b, "%s \x1b[%sm%s\x1b[0m %s \x1b[%sm%-44s\x1b[0m ", entry.Time.Format(timestampFormat), levelColor, levelText, caller, levelColor, entry.Message)
+		_, _ = fmt.Fprintf(b, "%s \x1b[%sm%s\x1b[0m %s \x1b[%sm%-44s\x1b[0m ", entry.Time.Format(timestampFormat), levelColor, levelText, caller, levelColor, entry.Message)
 	}
 	for _, k := range keys {
 		v := data[k]
-		fmt.Fprintf(b, " \x1b[%sm%s\x1b[0m=", levelColor, k)
+		_, _ = fmt.Fprintf(b, " \x1b[%sm%s\x1b[0m=", levelColor, k)
 		f.appendValue(b, v)
 	}
 }

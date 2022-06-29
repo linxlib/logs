@@ -65,10 +65,10 @@ func init() {
 	minimumCallerDepth = 1
 }
 
-// Defines the key when adding errors using WithError.
+// ErrorKey Defines the key when adding errors using WithError.
 var ErrorKey = "error"
 
-// An entry is the final or intermediate logs logging entry. It contains all
+// Entry An entry is the final or intermediate logs logging entry. It contains all
 // the fields passed with WithField{,s}. It's finally logged when Trace, Debug,
 // Info, Warn, Error, Fatal or Panic is called on it. These objects can be
 // reused and passed around as much as you wish to avoid field duplication.
@@ -117,7 +117,7 @@ func (entry *Entry) Dup() *Entry {
 	return &Entry{Logger: entry.Logger, Data: data, Time: entry.Time, Context: entry.Context, err: entry.err}
 }
 
-// Returns the bytes representation of this entry from the formatter.
+// Bytes Returns the bytes representation of this entry from the formatter.
 func (entry *Entry) Bytes() ([]byte, error) {
 	return entry.Logger.Formatter.Format(entry)
 }
@@ -133,12 +133,12 @@ func (entry *Entry) String() (string, error) {
 	return str, nil
 }
 
-// Add an error as single field (using the key defined in ErrorKey) to the Entry.
+// WithError Add an error as single field (using the key defined in ErrorKey) to the Entry.
 func (entry *Entry) WithError(err error) *Entry {
 	return entry.WithField(ErrorKey, err)
 }
 
-// Add a context to the Entry.
+// WithContext Add a context to the Entry.
 func (entry *Entry) WithContext(ctx context.Context) *Entry {
 	dataCopy := make(Fields, len(entry.Data))
 	for k, v := range entry.Data {
@@ -147,12 +147,12 @@ func (entry *Entry) WithContext(ctx context.Context) *Entry {
 	return &Entry{Logger: entry.Logger, Data: dataCopy, Time: entry.Time, err: entry.err, Context: ctx}
 }
 
-// Add a single field to the Entry.
+// WithField Add a single field to the Entry.
 func (entry *Entry) WithField(key string, value interface{}) *Entry {
 	return entry.WithFields(Fields{key: value})
 }
 
-// Add a map of fields to the Entry.
+// WithFields Add a map of fields to the Entry.
 func (entry *Entry) WithFields(fields Fields) *Entry {
 	data := make(Fields, len(entry.Data)+len(fields))
 	for k, v := range entry.Data {
@@ -181,7 +181,7 @@ func (entry *Entry) WithFields(fields Fields) *Entry {
 	return &Entry{Logger: entry.Logger, Data: data, Time: entry.Time, err: fieldErr, Context: entry.Context}
 }
 
-// Overrides the time of the Entry.
+// WithTime Overrides the time of the Entry.
 func (entry *Entry) WithTime(t time.Time) *Entry {
 	dataCopy := make(Fields, len(entry.Data))
 	for k, v := range entry.Data {
@@ -191,7 +191,7 @@ func (entry *Entry) WithTime(t time.Time) *Entry {
 }
 
 // getPackageName reduces a fully qualified function name to the package name
-// There really ought to be to be a better way...
+// There really ought to be a better way...
 func getPackageName(f string) string {
 	for {
 		lastPeriod := strings.LastIndex(f, ".")

@@ -13,7 +13,7 @@ import (
 
 type Logger struct {
 	// The logs are `io.Copy`'d to this in a mutex. It's common to set this to a
-	// file, or leave it default which is `os.Stderr`. You can also set this to
+	// file, or leave it defaults which is `os.Stderr`. You can also set this to
 	// something more adventurous, such as logging to Kafka.
 	Out io.Writer
 	// Hooks for the logger instance. These allow firing events based on logging
@@ -71,7 +71,7 @@ func (mw *MutexWrap) Disable() {
 	mw.disabled = true
 }
 
-// Creates a new logger. Configuration should be set by changing `Formatter`,
+// New Creates a new logger. Configuration should be set by changing `Formatter`,
 // `Out` and `Hooks` directly on the default logger instance. You can also just
 // instantiate your own:
 //
@@ -103,7 +103,7 @@ func New() *Logger {
 			ForceColors:      true,
 			FullTimestamp:    true,
 			QuoteEmptyFields: true,
-			CallerPrettyfier: callerPrettyfier,
+			CallerPrettifier: callerPrettyfier,
 		},
 		Hooks:        make(LevelHooks),
 		Level:        DebugLevel,
@@ -126,7 +126,7 @@ func (logger *Logger) releaseEntry(entry *Entry) {
 	logger.entryPool.Put(entry)
 }
 
-// Adds a field to the log entry, note that it doesn't log until you call
+// WithField Adds a field to the log entry, note that it doesn't log until you call
 // Debug, Print, Info, Warn, Error, Fatal or Panic. It only creates a log entry.
 // If you want multiple fields, use `WithFields`.
 func (logger *Logger) WithField(key string, value interface{}) *Entry {
@@ -135,7 +135,7 @@ func (logger *Logger) WithField(key string, value interface{}) *Entry {
 	return entry.WithField(key, value)
 }
 
-// Adds a struct of fields to the log entry. All it does is call `WithField` for
+// WithFields Adds a struct of fields to the log entry. All it does is call `WithField` for
 // each `Field`.
 func (logger *Logger) WithFields(fields Fields) *Entry {
 	entry := logger.newEntry()
@@ -143,7 +143,7 @@ func (logger *Logger) WithFields(fields Fields) *Entry {
 	return entry.WithFields(fields)
 }
 
-// Add an error as single field to the log entry.  All it does is call
+// WithError Add an error as single field to the log entry.  All it does is call
 // `WithError` for the given `error`.
 func (logger *Logger) WithError(err error) *Entry {
 	entry := logger.newEntry()
@@ -151,14 +151,14 @@ func (logger *Logger) WithError(err error) *Entry {
 	return entry.WithError(err)
 }
 
-// Add a context to the log entry.
+// WithContext Add a context to the log entry.
 func (logger *Logger) WithContext(ctx context.Context) *Entry {
 	entry := logger.newEntry()
 	defer logger.releaseEntry(entry)
 	return entry.WithContext(ctx)
 }
 
-// Overrides the time of the log entry.
+// WithTime Overrides the time of the log entry.
 func (logger *Logger) WithTime(t time.Time) *Entry {
 	entry := logger.newEntry()
 	defer logger.releaseEntry(entry)
@@ -314,7 +314,7 @@ func (logger *Logger) Exit(code int) {
 	logger.ExitFunc(code)
 }
 
-//When file is opened with appending mode, it's safe to
+// SetNoLock When file is opened with appending mode, it's safe to
 //write concurrently to a file (within 4k message on Linux).
 //In these cases user can choose to disable the lock.
 func (logger *Logger) SetNoLock() {

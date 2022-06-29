@@ -77,7 +77,7 @@ func (level Level) MarshalText() ([]byte, error) {
 	return nil, fmt.Errorf("not a valid logs level %d", level)
 }
 
-// A constant exposing all logging levels
+// AllLevels A constant exposing all logging levels
 var AllLevels = []Level{
 	PanicLevel,
 	FatalLevel,
